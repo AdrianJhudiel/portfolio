@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { molNodes, WORLD_WIDTH, WORLD_HEIGHT, type MolNode as MolNodeData } from "@/lib/molecular-graph";
 import { cameraForNode, cameraForCluster, overviewCamera, type Camera } from "@/lib/camera";
 import { siteConfig } from "@/lib/site";
@@ -16,6 +16,7 @@ function getViewport() {
 }
 
 export default function MolecularCanvas() {
+  const prefersReducedMotion = useReducedMotion();
   const [camera, setCamera] = useState<Camera>(() => {
     const { vw, vh } = getViewport();
     return overviewCamera(vw, vh);
@@ -62,6 +63,20 @@ export default function MolecularCanvas() {
 
   const focusedNode = molNodes.find((n) => n.id === focusedId) ?? null;
 
+  // When a hub is focused, the camera zooms out to frame the hub *and* its
+  // satellite children together (see cameraForCluster) — so those children
+  // are the thing the user is now looking at and about to click. They must
+  // not be dimmed/blurred/bobbing like the rest of the graph, or the exact
+  // targets the camera just brought into view become hard to see and their
+  // hit-boxes drift under the cursor.
+  const activeIds = new Set<string>();
+  if (focusedNode) {
+    activeIds.add(focusedNode.id);
+    for (const n of molNodes) {
+      if (n.parentId === focusedNode.id) activeIds.add(n.id);
+    }
+  }
+
   return (
     <div
       className="fixed inset-0 overflow-hidden"
@@ -72,7 +87,18 @@ export default function MolecularCanvas() {
 
       <motion.div
         animate={{ x: camera.x, y: camera.y, scale: camera.scale }}
-        transition={{ type: "spring", stiffness: 95, damping: 22 }}
+        transition={
+          prefersReducedMotion
+            ? { duration: 0.15, ease: "easeOut" }
+            : // cameraForNode/overviewCamera differ in x, y, *and* scale, so any
+              // transition between them is inherently diagonal — that part's
+              // fine. But a spring this close to critically damped (ratio
+              // ~1.13) never overshoots, it just crawls the last stretch of
+              // the distance slower and slower, so the pan is still visibly
+              // creeping over a second after a click. A fixed-duration tween
+              // finishes decisively instead of trailing off.
+              { type: "tween", duration: 0.55, ease: [0.22, 1, 0.36, 1] }
+        }
         style={{
           position: "absolute",
           top: 0,
@@ -84,13 +110,20 @@ export default function MolecularCanvas() {
       >
         <BondLines hoveredId={hoveredId} />
 
+        {/* Bobbing nodes drift a few px on the y-axis. onHover is bound to
+            that same drifting box, so if a node (or one nearby) keeps
+            bobbing while the cursor sits near its edge, the hit-box slides
+            in and out from under the cursor and hover flickers on/off.
+            Freezing the drift for everyone while anything is hovered keeps
+            hit-boxes still for the whole interaction. */}
         {molNodes.map((node, i) => (
           <MolNode
             key={node.id}
             node={node}
             index={i}
             isFocused={focusedId === node.id}
-            isDimmed={focusedId !== null && focusedId !== node.id}
+            isDimmed={focusedId !== null && !activeIds.has(node.id)}
+            isBobbing={focusedId === null && hoveredId === null}
             isHovered={hoveredId === node.id}
             onHover={setHoveredId}
             onClick={() => focusNode(node)}
