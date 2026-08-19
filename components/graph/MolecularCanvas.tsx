@@ -90,7 +90,14 @@ export default function MolecularCanvas() {
         transition={
           prefersReducedMotion
             ? { duration: 0.15, ease: "easeOut" }
-            : { type: "spring", stiffness: 95, damping: 22 }
+            : // cameraForNode/overviewCamera differ in x, y, *and* scale, so any
+              // transition between them is inherently diagonal — that part's
+              // fine. But a spring this close to critically damped (ratio
+              // ~1.13) never overshoots, it just crawls the last stretch of
+              // the distance slower and slower, so the pan is still visibly
+              // creeping over a second after a click. A fixed-duration tween
+              // finishes decisively instead of trailing off.
+              { type: "tween", duration: 0.55, ease: [0.22, 1, 0.36, 1] }
         }
         style={{
           position: "absolute",
@@ -103,6 +110,12 @@ export default function MolecularCanvas() {
       >
         <BondLines hoveredId={hoveredId} />
 
+        {/* Bobbing nodes drift a few px on the y-axis. onHover is bound to
+            that same drifting box, so if a node (or one nearby) keeps
+            bobbing while the cursor sits near its edge, the hit-box slides
+            in and out from under the cursor and hover flickers on/off.
+            Freezing the drift for everyone while anything is hovered keeps
+            hit-boxes still for the whole interaction. */}
         {molNodes.map((node, i) => (
           <MolNode
             key={node.id}
@@ -110,7 +123,7 @@ export default function MolecularCanvas() {
             index={i}
             isFocused={focusedId === node.id}
             isDimmed={focusedId !== null && !activeIds.has(node.id)}
-            isBobbing={focusedId === null}
+            isBobbing={focusedId === null && hoveredId === null}
             isHovered={hoveredId === node.id}
             onHover={setHoveredId}
             onClick={() => focusNode(node)}

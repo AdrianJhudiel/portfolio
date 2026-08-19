@@ -38,113 +38,130 @@ export default function MolNode({
   const showExpandedContent = isFocused;
 
   return (
-    <motion.button
-      onClick={(e) => {
-        e.stopPropagation();
-        onClick(e);
-      }}
-      onMouseEnter={() => onHover(node.id)}
-      onMouseLeave={() => onHover(null)}
-      animate={{
-        y: isBobbing && !prefersReducedMotion ? [0, -5, 0] : 0,
-        opacity: isDimmed ? 0.25 : 1,
-        scale: isHovered && !isFocused ? 1.08 : 1,
-        filter: isDimmed ? "blur(4px)" : "blur(0px)",
-      }}
-      transition={{
-        y: {
-          duration: 4.5 + (index % 3),
-          repeat: isBobbing && !prefersReducedMotion ? Infinity : 0,
-          ease: "easeInOut",
-          delay: index * 0.3,
-        },
-        opacity: { duration: 0.5 },
-        filter: { duration: 0.5 },
-        scale: { type: "spring", stiffness: 240, damping: 20 },
-      }}
-      aria-label={isHub ? `${node.label} — open` : node.label}
-      className="mol-node absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full"
-      style={{
-        left: node.x,
-        top: node.y,
-        width: node.size,
-        height: node.size,
-        background: isHovered || isFocused ? NODE_FILL_ACTIVE : NODE_FILL,
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-        border: `1px solid ${isHovered || isFocused ? ACCENT : NODE_BORDER}`,
-        boxShadow:
-          isHovered || isFocused
-            ? `0 10px 40px -8px ${ACCENT}55, 0 2px 12px rgba(15,23,42,0.08)`
-            : "0 10px 25px -5px rgba(15,23,42,0.08)",
-      }}
+    // Static positioning wrapper: this owns `left`/`top` and the -50%/-50%
+    // centering transform via plain Tailwind classes, and Framer Motion
+    // never touches it. The motion.button below owns its own `animate`
+    // transform (bob/scale) starting clean from (0, 0) — if the same
+    // element tried to do both, Framer's animate would take over the
+    // whole inline `transform` property (inline style beats the Tailwind
+    // class) and silently drop the -50%/-50% centering the instant it
+    // attached on hydration, jumping every node down-right by half its
+    // own size.
+    <div
+      className="absolute -translate-x-1/2 -translate-y-1/2"
+      style={{ left: node.x, top: node.y, width: node.size, height: node.size }}
     >
-      <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full">
-        <div className="flex w-[78%] flex-col items-center gap-[2px] text-center">
-          <span
-            style={{
-              fontSize: labelSize,
-              color: TEXT_DARK,
-              fontWeight: 600,
-              lineHeight: 1.15,
-              fontFamily: "var(--font-display)",
-            }}
-          >
-            {node.label}
-          </span>
-
-          {node.subtitle && (
-            <span style={{ fontSize: subtitleSize, color: TEXT_MUTED, fontFamily: "var(--font-mono)" }}>
-              {node.subtitle}
-            </span>
-          )}
-
-          {node.detail && (
+      <motion.button
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick(e);
+        }}
+        onMouseEnter={() => onHover(node.id)}
+        onMouseLeave={() => onHover(null)}
+        animate={{
+          y: isBobbing && !prefersReducedMotion ? [0, -5, 0] : 0,
+          opacity: isDimmed ? 0.25 : 1,
+          scale: isHovered && !isFocused ? 1.08 : 1,
+          filter: isDimmed ? "blur(4px)" : "blur(0px)",
+        }}
+        transition={{
+          y: {
+            duration: 4.5 + (index % 3),
+            repeat: isBobbing && !prefersReducedMotion ? Infinity : 0,
+            ease: "easeInOut",
+            delay: index * 0.3,
+          },
+          opacity: { duration: 0.5 },
+          filter: { duration: 0.5 },
+          // A bouncy spring here overshoots past the target scale and rings
+          // back before settling. Since this element is also the hover
+          // target, an overshoot that swings back past the cursor re-fires
+          // mouseenter, which snaps the target back to hovered, which
+          // overshoots again — a feedback loop that reads as flicker. A
+          // plain non-oscillating tween can't cross back over the cursor
+          // once it starts leaving, so the loop has nothing to latch onto.
+          scale: { type: "tween", duration: 0.18, ease: "easeOut" },
+        }}
+        aria-label={isHub ? `${node.label} — open` : node.label}
+        className="mol-node block h-full w-full cursor-pointer rounded-full"
+        style={{
+          background: isHovered || isFocused ? NODE_FILL_ACTIVE : NODE_FILL,
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+          border: `1px solid ${isHovered || isFocused ? ACCENT : NODE_BORDER}`,
+          boxShadow:
+            isHovered || isFocused
+              ? `0 10px 40px -8px ${ACCENT}55, 0 2px 12px rgba(15,23,42,0.08)`
+              : "0 10px 25px -5px rgba(15,23,42,0.08)",
+        }}
+      >
+        <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full">
+          <div className="flex w-[78%] flex-col items-center gap-[2px] text-center">
             <span
-              aria-hidden={!showExpandedContent}
               style={{
-                fontSize: detailSize,
-                color: TEXT_MUTED,
-                lineHeight: 1.4,
-                marginTop: isHub ? 6 : 3,
-                opacity: showExpandedContent ? 1 : 0,
-                transition: "opacity 0.3s ease",
+                fontSize: labelSize,
+                color: TEXT_DARK,
+                fontWeight: 600,
+                lineHeight: 1.15,
+                fontFamily: "var(--font-display)",
               }}
             >
-              {node.detail}
+              {node.label}
             </span>
-          )}
 
-          {node.project && (
-            <div
-              aria-hidden={!showExpandedContent}
-              style={{ opacity: showExpandedContent ? 1 : 0, transition: "opacity 0.3s ease" }}
-            >
+            {node.subtitle && (
+              <span style={{ fontSize: subtitleSize, color: TEXT_MUTED, fontFamily: "var(--font-mono)" }}>
+                {node.subtitle}
+              </span>
+            )}
+
+            {node.detail && (
               <span
+                aria-hidden={!showExpandedContent}
                 style={{
-                  fontSize: stackSize + 0.3,
-                  color: ACCENT,
-                  fontFamily: "var(--font-mono)",
-                  marginTop: 2,
-                  display: "block",
+                  fontSize: detailSize,
+                  color: TEXT_MUTED,
+                  lineHeight: 1.4,
+                  marginTop: isHub ? 6 : 3,
+                  opacity: showExpandedContent ? 1 : 0,
+                  transition: "opacity 0.3s ease",
                 }}
               >
-                {node.project.stack}
+                {node.detail}
               </span>
-              <span style={{ fontSize: detailSize, color: TEXT_MUTED, lineHeight: 1.4, marginTop: 3, display: "block" }}>
-                {node.project.description}
-              </span>
-              <div style={{ marginTop: 4, display: "flex", flexDirection: "column", gap: 1.5, alignItems: "flex-start" }}>
-                {node.project.features.map((f) => (
-                  <span key={f.label} style={{ fontSize: stackSize, color: TEXT_MUTED, textAlign: "left" }}>
-                    ✓ {f.label}
-                  </span>
-                ))}
+            )}
+
+            {node.project && (
+              <div
+                aria-hidden={!showExpandedContent}
+                style={{ opacity: showExpandedContent ? 1 : 0, transition: "opacity 0.3s ease" }}
+              >
+                <span
+                  style={{
+                    fontSize: stackSize + 0.3,
+                    color: ACCENT,
+                    fontFamily: "var(--font-mono)",
+                    marginTop: 2,
+                    display: "block",
+                  }}
+                >
+                  {node.project.stack}
+                </span>
+                <span style={{ fontSize: detailSize, color: TEXT_MUTED, lineHeight: 1.4, marginTop: 3, display: "block" }}>
+                  {node.project.description}
+                </span>
+                <div style={{ marginTop: 4, display: "flex", flexDirection: "column", gap: 1.5, alignItems: "flex-start" }}>
+                  {node.project.features.map((f) => (
+                    <span key={f.label} style={{ fontSize: stackSize, color: TEXT_MUTED, textAlign: "left" }}>
+                      ✓ {f.label}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
-      </div>
-    </motion.button>
+      </motion.button>
+    </div>
   );
 }

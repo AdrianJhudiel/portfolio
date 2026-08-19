@@ -66,7 +66,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} h-full antialiased`}
     >
-      <body className="h-full text-[var(--foreground)]">{children}</body>
+      <body
+        className="h-full text-[var(--foreground)]"
+        suppressHydrationWarning
+      >
+        {children}
+      </body>
     </html>
   );
 }
