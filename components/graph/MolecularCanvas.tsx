@@ -172,6 +172,17 @@ export default function MolecularCanvas({ viewToggle }: { viewToggle: ReactNode 
               LinkedIn
             </a>
           )}
+          {siteConfig.whatsapp && (
+            <a
+              href={siteConfig.whatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-full border px-3 py-2 font-mono text-[10px] tracking-widest uppercase backdrop-blur-xl transition-colors"
+              style={{ background: "var(--glass-bg)", borderColor: "var(--glass-border)", color: TEXT_MUTED }}
+            >
+              WhatsApp
+            </a>
+          )}
           <a
             href={siteConfig.resumeUrl}
             download

@@ -71,6 +71,11 @@ export default function SimpleView({ viewToggle }: { viewToggle: ReactNode }) {
                 LinkedIn
               </a>
             )}
+            {siteConfig.whatsapp && (
+              <a href={siteConfig.whatsapp} target="_blank" rel="noopener noreferrer" className={linkClass}>
+                WhatsApp
+              </a>
+            )}
             <a
               href={siteConfig.resumeUrl}
               download
@@ -174,6 +179,11 @@ export default function SimpleView({ viewToggle }: { viewToggle: ReactNode }) {
             {siteConfig.linkedin && (
               <a href={siteConfig.linkedin} target="_blank" rel="noopener noreferrer" className={linkClass}>
                 LinkedIn
+              </a>
+            )}
+            {siteConfig.whatsapp && (
+              <a href={siteConfig.whatsapp} target="_blank" rel="noopener noreferrer" className={linkClass}>
+                WhatsApp
               </a>
             )}
           </div>

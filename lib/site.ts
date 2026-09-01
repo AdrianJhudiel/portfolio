@@ -7,6 +7,7 @@ export const siteConfig = {
   github: "https://github.com/adrianjhudiel",
   // TODO: paste the real LinkedIn profile URL once provided.
   linkedin: "",
+  whatsapp: "https://wa.me/639565384687",
   // Downloadable resume/CV — drop the actual file at public/resume.pdf.
   resumeUrl: "/resume.pdf",
   // TODO: once this is deployed on Vercel (or a custom domain is attached),
