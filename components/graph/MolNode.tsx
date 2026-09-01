@@ -2,7 +2,17 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import type { MolNode as MolNodeData } from "@/lib/molecular-graph";
-import { NODE_FILL, NODE_FILL_ACTIVE, NODE_BORDER, ACCENT, TEXT_DARK, TEXT_MUTED } from "@/lib/pearl-theme";
+import {
+  NODE_FILL,
+  NODE_FILL_ACTIVE,
+  NODE_BORDER,
+  ACCENT,
+  ACCENT_SOFT,
+  ACCENT_TEXT,
+  TEXT_DARK,
+  TEXT_MUTED,
+} from "@/lib/pearl-theme";
+import FeatureList from "@/components/content/FeatureList";
 
 export default function MolNode({
   node,
@@ -26,16 +36,43 @@ export default function MolNode({
   const prefersReducedMotion = useReducedMotion();
   const isHub = node.kind === "hub";
   const labelSize = isHub ? 16 : 6;
-  const subtitleSize = 5;
-  const detailSize = isHub ? 4.5 : 1.9;
-  const stackSize = 1.7;
+  const subtitleSize = 6;
+  // detailSize/stackSize are scaled inversely to each node type's camera.scale
+  // (see lib/camera.ts fitPoint) — hubs and subs land at roughly the same
+  // final rendered size regardless of their different world-space node.size.
+  // These were tuned low enough that body text rendered around 10-14px on
+  // screen; ~1.5-1.6x gets zoomed-in body text to a comfortably readable
+  // ~18-22px.
+  const detailSize = isHub ? 7 : 3;
+  const stackSize = 2.7;
 
   // Skill/project bodies and long hub paragraphs only make sense once the
   // node has been zoomed into — at overview scale they're too small to read
   // and, since they aren't clipped, would otherwise spill text well outside
-  // the node's circle. Keep them in the DOM (so SEO/screen readers still see
-  // the content) but only reveal them on focus.
+  // the node's circle. Keep them in the DOM but only *visually* reveal them
+  // on focus (isFocused = the node has been clicked/activated, not merely
+  // tab-focused).
   const showExpandedContent = isFocused;
+
+  // The visual reveal above is gated behind activation, but a screen-reader
+  // user who lands on this button via Tab (without activating it yet) still
+  // needs the full content — otherwise they only hear the bare label and
+  // have no way to preview a node before deciding to open it. So the
+  // button's accessible name carries everything unconditionally; the
+  // aria-hidden spans below stay hidden until showExpandedContent purely to
+  // avoid a sighted-but-assistive-tech-driven double read of the same text.
+  const accessibleLabel = [
+    node.label,
+    node.subtitle,
+    node.detail,
+    node.project?.stack,
+    node.project?.description,
+    node.project?.features?.length
+      ? `Features: ${node.project.features.map((f) => f.label).join(", ")}`
+      : undefined,
+  ]
+    .filter(Boolean)
+    .join(". ");
 
   return (
     // Static positioning wrapper: this owns `left`/`top` and the -50%/-50%
@@ -71,8 +108,11 @@ export default function MolNode({
             ease: "easeInOut",
             delay: index * 0.3,
           },
-          opacity: { duration: 0.5 },
-          filter: { duration: 0.5 },
+          // Roughly matches the camera pan's duration (MolecularCanvas.tsx)
+          // so the dim/undim settles together with the pan instead of
+          // finishing noticeably earlier.
+          opacity: { duration: 0.7, ease: [0.65, 0, 0.35, 1] },
+          filter: { duration: 0.7, ease: [0.65, 0, 0.35, 1] },
           // A bouncy spring here overshoots past the target scale and rings
           // back before settling. Since this element is also the hover
           // target, an overshoot that swings back past the cursor re-fires
@@ -82,7 +122,7 @@ export default function MolNode({
           // once it starts leaving, so the loop has nothing to latch onto.
           scale: { type: "tween", duration: 0.18, ease: "easeOut" },
         }}
-        aria-label={isHub ? `${node.label} — open` : node.label}
+        aria-label={isHub ? `${accessibleLabel} — open` : accessibleLabel}
         className="mol-node block h-full w-full cursor-pointer rounded-full"
         style={{
           background: isHovered || isFocused ? NODE_FILL_ACTIVE : NODE_FILL,
@@ -91,12 +131,19 @@ export default function MolNode({
           border: `1px solid ${isHovered || isFocused ? ACCENT : NODE_BORDER}`,
           boxShadow:
             isHovered || isFocused
-              ? `0 10px 40px -8px ${ACCENT}55, 0 2px 12px rgba(15,23,42,0.08)`
+              ? `0 10px 40px -8px ${ACCENT_SOFT}, 0 2px 12px rgba(15,23,42,0.08)`
               : "0 10px 25px -5px rgba(15,23,42,0.08)",
         }}
       >
         <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full">
-          <div className="flex w-[78%] flex-col items-center gap-[2px] text-center">
+          {/* Safety net: at the enlarged text sizes, a project with a long
+              description + several features can outgrow the circle's fixed
+              height. Rather than silently clip, let this inner box scroll —
+              only kicks in when content actually overflows. */}
+          <div
+            className="flex w-[78%] flex-col items-center gap-[2px] overflow-y-auto text-center"
+            style={{ maxHeight: "92%" }}
+          >
             <span
               style={{
                 fontSize: labelSize,
@@ -139,7 +186,7 @@ export default function MolNode({
                 <span
                   style={{
                     fontSize: stackSize + 0.3,
-                    color: ACCENT,
+                    color: ACCENT_TEXT,
                     fontFamily: "var(--font-mono)",
                     marginTop: 2,
                     display: "block",
@@ -150,13 +197,11 @@ export default function MolNode({
                 <span style={{ fontSize: detailSize, color: TEXT_MUTED, lineHeight: 1.4, marginTop: 3, display: "block" }}>
                   {node.project.description}
                 </span>
-                <div style={{ marginTop: 4, display: "flex", flexDirection: "column", gap: 1.5, alignItems: "flex-start" }}>
-                  {node.project.features.map((f) => (
-                    <span key={f.label} style={{ fontSize: stackSize, color: TEXT_MUTED, textAlign: "left" }}>
-                      ✓ {f.label}
-                    </span>
-                  ))}
-                </div>
+                <FeatureList
+                  features={node.project.features}
+                  style={{ marginTop: 4, display: "flex", flexDirection: "column", gap: 1.5, alignItems: "flex-start" }}
+                  itemStyle={{ fontSize: stackSize, color: TEXT_MUTED, textAlign: "left" }}
+                />
               </div>
             )}
           </div>

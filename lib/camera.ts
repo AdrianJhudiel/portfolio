@@ -26,7 +26,7 @@ function fitBounds(
 
 /** Zoom tightly into a single node, filling most of the viewport. */
 export function cameraForNode(node: MolNode, vw: number, vh: number): Camera {
-  return fitPoint(node.x, node.y, node.size, vw, vh, 0.72);
+  return fitPoint(node.x, node.y, node.size, vw, vh, 0.78);
 }
 
 /** Zoom to frame a hub together with its satellite sub-nodes. */

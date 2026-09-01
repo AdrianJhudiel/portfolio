@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 import { siteConfig } from "@/lib/site";
+import PersonJsonLd from "@/components/seo/PersonJsonLd";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -57,7 +58,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f8fafc",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f172a" },
+  ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -70,6 +74,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         className="h-full text-[var(--foreground)]"
         suppressHydrationWarning
       >
+        <PersonJsonLd />
         {children}
       </body>
     </html>
