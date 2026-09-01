@@ -145,6 +145,7 @@ export default function SimpleView({ viewToggle }: { viewToggle: ReactNode }) {
                   features={project.features}
                   className="mt-3 flex flex-col gap-1"
                   itemClassName="text-sm text-muted"
+                  checkClassName="text-check"
                 />
               </article>
             ))}

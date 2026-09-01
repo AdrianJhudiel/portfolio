@@ -10,7 +10,9 @@ import {
   ACCENT_SOFT,
   ACCENT_TEXT,
   TEXT_DARK,
+  TEXT_BODY,
   TEXT_MUTED,
+  CHECK,
 } from "@/lib/pearl-theme";
 import FeatureList from "@/components/content/FeatureList";
 
@@ -167,7 +169,7 @@ export default function MolNode({
                 aria-hidden={!showExpandedContent}
                 style={{
                   fontSize: detailSize,
-                  color: TEXT_MUTED,
+                  color: TEXT_BODY,
                   lineHeight: 1.4,
                   marginTop: isHub ? 6 : 3,
                   opacity: showExpandedContent ? 1 : 0,
@@ -194,13 +196,14 @@ export default function MolNode({
                 >
                   {node.project.stack}
                 </span>
-                <span style={{ fontSize: detailSize, color: TEXT_MUTED, lineHeight: 1.4, marginTop: 3, display: "block" }}>
+                <span style={{ fontSize: detailSize, color: TEXT_BODY, lineHeight: 1.4, marginTop: 3, display: "block" }}>
                   {node.project.description}
                 </span>
                 <FeatureList
                   features={node.project.features}
                   style={{ marginTop: 4, display: "flex", flexDirection: "column", gap: 1.5, alignItems: "flex-start" }}
                   itemStyle={{ fontSize: stackSize, color: TEXT_MUTED, textAlign: "left" }}
+                  checkStyle={{ color: CHECK }}
                 />
               </div>
             )}

@@ -27,7 +27,18 @@ export const ACCENT_SOFT = "var(--graph-accent-soft)";
 export const ACCENT_TEXT = "var(--graph-accent-text)";
 
 export const TEXT_DARK = "var(--graph-text-dark)";
+// Description/detail paragraphs (the actual copy someone reads) — richer
+// and higher-contrast than TEXT_MUTED, which stays reserved for secondary
+// metadata (subtitles, feature-list labels) so the two don't blur into one
+// flat gray block.
+export const TEXT_BODY = "var(--graph-text-body)";
 export const TEXT_MUTED = "var(--graph-text-muted)";
+
+// A dedicated success-green for feature-list checkmarks — reusing the
+// indigo accent everywhere it fits (border glow, hover, stack tags) started
+// reading as one monotone palette; a second hue for "this shipped" is a
+// deliberate, small point of color variety rather than more indigo.
+export const CHECK = "var(--graph-check)";
 
 // next/og's Satori renderer (app/icon.tsx, app/opengraph-image.tsx) draws
 // outside a DOM/CSSOM — it cannot resolve CSS custom properties, so those

@@ -12,6 +12,7 @@
   --glass-border: rgba(255, 255, 255, 0.8);
   --card-bg: #ffffff;
   --card-border: #e2e8f0;
+  --check: #16a34a;
   color-scheme: light;
 
   /* Molecular graph palette (lib/pearl-theme.ts reads these via var()) —
@@ -31,7 +32,13 @@
   --graph-accent-soft: rgba(129, 140, 248, 0.35);
   --graph-accent-text: #4f46e5;
   --graph-text-dark: #0f172a;
+  /* Description/detail paragraphs read as flat and washed-out at the same
+     muted tone used for secondary metadata (subtitles, feature labels) —
+     a richer, higher-contrast body tone for the actual copy fixes that
+     without touching the metadata color. */
+  --graph-text-body: #334155;
   --graph-text-muted: #475569;
+  --graph-check: #16a34a;
 }
 
 /* Dark palette, OS-driven only (no manual toggle). Kept close to the light
@@ -48,6 +55,7 @@
     --glass-border: rgba(148, 163, 184, 0.25);
     --card-bg: #1e293b;
     --card-border: rgba(148, 163, 184, 0.18);
+    --check: #4ade80;
     color-scheme: dark;
 
     --graph-bg-from: #0f172a;
@@ -66,7 +74,9 @@
     --graph-accent-soft: rgba(165, 180, 252, 0.35);
     --graph-accent-text: #c7d2fe;
     --graph-text-dark: #f1f5f9;
+    --graph-text-body: #cbd5e1;
     --graph-text-muted: #94a3b8;
+    --graph-check: #4ade80;
   }
 }
 
@@ -78,6 +88,7 @@
   --color-accent: var(--accent);
   --color-card: var(--card-bg);
   --color-card-border: var(--card-border);
+  --color-check: var(--check);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-display: var(--font-space-grotesk);
