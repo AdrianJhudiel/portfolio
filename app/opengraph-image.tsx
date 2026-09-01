@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { siteConfig } from "@/lib/site";
-import { BG_FROM, BG_TO, TEXT_DARK, TEXT_MUTED, ACCENT } from "@/lib/pearl-theme";
+import { OG_BG_FROM, OG_BG_TO, OG_TEXT_DARK, OG_TEXT_MUTED, OG_ACCENT } from "@/lib/pearl-theme";
 
 export const alt = `${siteConfig.name} — ${siteConfig.role}`;
 export const size = { width: 1200, height: 630 };
@@ -17,7 +17,7 @@ export default function Image() {
           flexDirection: "column",
           justifyContent: "center",
           padding: "80px",
-          background: `linear-gradient(180deg, ${BG_FROM}, ${BG_TO})`,
+          background: `linear-gradient(180deg, ${OG_BG_FROM}, ${OG_BG_TO})`,
         }}
       >
         <div
@@ -27,7 +27,7 @@ export default function Image() {
             gap: 16,
             fontSize: 28,
             fontFamily: "monospace",
-            color: ACCENT,
+            color: OG_ACCENT,
             letterSpacing: 4,
             textTransform: "uppercase",
           }}
@@ -37,7 +37,7 @@ export default function Image() {
               width: 14,
               height: 14,
               borderRadius: "50%",
-              background: ACCENT,
+              background: OG_ACCENT,
               display: "flex",
             }}
           />
@@ -48,7 +48,7 @@ export default function Image() {
             display: "flex",
             fontSize: 76,
             fontWeight: 700,
-            color: TEXT_DARK,
+            color: OG_TEXT_DARK,
             marginTop: 28,
           }}
         >
@@ -58,7 +58,7 @@ export default function Image() {
           style={{
             display: "flex",
             fontSize: 34,
-            color: TEXT_MUTED,
+            color: OG_TEXT_MUTED,
             marginTop: 20,
           }}
         >

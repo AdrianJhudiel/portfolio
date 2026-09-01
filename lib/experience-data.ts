@@ -21,7 +21,7 @@ export const skillNodes: SkillNode[] = [
     id: "python",
     label: "Python & Django",
     detail:
-      "Backend logic and automation scripting, including the Django-based ParkTrack reservation system.",
+      "Backend logic for web applications, including the Django-based ParkTrack reservation system.",
   },
   {
     id: "databases",
@@ -33,7 +33,13 @@ export const skillNodes: SkillNode[] = [
     id: "crm",
     label: "CRM Automation",
     detail:
-      "GoHighLevel funnels and Zapier/Make.com workflows for lead tracking and business process automation.",
+      "Hands-on exposure to GoHighLevel for CRM workflow configuration, supporting lead-tracking and business-process automation initiatives.",
+  },
+  {
+    id: "qa",
+    label: "Quality Assurance",
+    detail:
+      "Manual testing, bug tracking, test case writing, and backend/API testing to verify feature reliability before release.",
   },
   {
     id: "frontend",
@@ -45,7 +51,13 @@ export const skillNodes: SkillNode[] = [
     id: "workflow",
     label: "Dev Workflow",
     detail:
-      "Keyboard-driven environment: Neovim (LazyVim), LazyGit, and Linux CLI, with Figma for UI/UX prototyping.",
+      "AI-native development workflow built around Orca, with Git for version control and Figma for UI/UX prototyping.",
+  },
+  {
+    id: "ai-tools",
+    label: "AI-Assisted Development",
+    detail:
+      "Efficient with AI coding assistants — Claude, ChatGPT, and Gemini — to accelerate development, debugging, and technical research.",
   },
 ];
 
@@ -69,7 +81,7 @@ export const projects: Project[] = [
     title: "FurryFriends",
     stack: "ReactJS + Spring Boot",
     description:
-      "A vet appointment scheduling platform connecting pet owners with clinics.",
+      "An appointment-scheduling platform connecting pet owners with veterinary clinics, with dedicated views for owners, vets, and admins.",
     features: [
       { label: "Appointment scheduling engine", done: true },
       { label: "Role-based access (owner / vet / admin)", done: true },
@@ -81,7 +93,7 @@ export const projects: Project[] = [
     title: "ParkTrack",
     stack: "Python + Django",
     description:
-      "A parking reservation system for booking and managing parking slots.",
+      "An intuitive parking-reservation system with a clean UI and an end-to-end booking flow — search, reserve, and manage a slot in a few steps.",
     features: [
       { label: "Slot reservation & availability logic", done: true },
       { label: "Django backend with relational database", done: true },
@@ -92,29 +104,34 @@ export const projects: Project[] = [
     id: "collaboraid",
     title: "CollaborAid",
     stack: "Android + Kotlin",
-    description: "An Android app for peer collaboration, built in Kotlin.",
+    description:
+      "A community-help platform pairing neighbors for peer support, backed by Google Cloud services with gamified level-progression to keep contributors engaged.",
     features: [
+      { label: "Google Cloud-backed backend services", done: true },
+      { label: "Gamified level-progression system", done: true },
       { label: "Native Android UI in Kotlin", done: true },
-      { label: "Collaboration-focused feature set", done: true },
     ],
   },
   {
     id: "mytravelpal",
     title: "MyTravelPal",
     stack: "Android + Kotlin",
-    description: "A travel companion app built for Android with Kotlin.",
+    description:
+      "A travel companion app with real-time itinerary tracking, keeping trip plans in sync as they change.",
     features: [
+      { label: "Real-time itinerary updates", done: true },
       { label: "Native Android UI in Kotlin", done: true },
-      { label: "Travel planning feature set", done: true },
     ],
   },
   {
     id: "deluge",
     title: "Deluge Adventure TD",
     stack: "Android + Kotlin",
-    description: "A tower-defense style Android game built in Kotlin.",
+    description:
+      "A 2D pixel-art tower-defense game built around custom grid-based placement mechanics.",
     features: [
-      { label: "Tower-defense gameplay loop", done: true },
+      { label: "Custom grid-based tower placement", done: true },
+      { label: "2D pixel-art visual style", done: true },
       { label: "Native Android build in Kotlin", done: true },
     ],
   },
@@ -123,10 +140,11 @@ export const projects: Project[] = [
     title: "Cyber Kids",
     stack: "Lua",
     description:
-      "Capstone game project built in Lua, presented at ICE 2025, Silliman University.",
+      "A capstone game engineered in Lua with immersive in-game models and custom animations, co-presented at ICE 2025 (Silliman University) to promote cyber-literacy awareness.",
     features: [
-      { label: "Full game built in Lua", done: true },
-      { label: "Presented at ICE 2025, Silliman University", done: true },
+      { label: "Custom animations via a built-in animation editor", done: true },
+      { label: "Immersive in-game models and game logic in Lua", done: true },
+      { label: "Co-presented at ICE 2025, Silliman University", done: true },
     ],
   },
 ];

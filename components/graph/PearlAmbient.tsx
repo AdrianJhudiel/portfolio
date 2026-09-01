@@ -17,15 +17,16 @@ export default function PearlAmbient() {
       <div
         className="absolute inset-0"
         style={{
-          background:
-            "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(129,140,248,0.06), transparent 70%)",
+          background: "radial-gradient(ellipse 80% 60% at 50% 0%, var(--graph-accent-soft), transparent 70%)",
+          opacity: 0.4,
         }}
       />
       <div
         className="animate-breathe absolute inset-0"
         style={{
-          backgroundImage: "radial-gradient(circle, rgba(15,23,42,0.06) 1px, transparent 1px)",
+          backgroundImage: "radial-gradient(circle, var(--graph-text-dark) 1px, transparent 1px)",
           backgroundSize: "30px 30px",
+          opacity: 0.06,
         }}
       />
       {Array.from({ length: PARTICLE_COUNT }, (_, i) => {

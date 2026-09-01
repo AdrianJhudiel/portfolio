@@ -4,6 +4,7 @@ import { BOND_COLOR, ACCENT } from "@/lib/pearl-theme";
 export default function BondLines({ hoveredId }: { hoveredId: string | null }) {
   return (
     <svg
+      aria-hidden="true"
       className="pointer-events-none absolute top-0 left-0 overflow-visible"
       width={WORLD_WIDTH}
       height={WORLD_HEIGHT}
