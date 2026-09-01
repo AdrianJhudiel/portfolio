@@ -5,8 +5,7 @@ export const siteConfig = {
   companyTitle: "Performance-Based Associate",
   email: "jhudzartezuela@gmail.com",
   github: "https://github.com/adrianjhudiel",
-  // TODO: paste the real LinkedIn profile URL once provided.
-  linkedin: "",
+  linkedin: "https://www.linkedin.com/in/jhudiel-artezuela-139a9939a/",
   whatsapp: "https://wa.me/639565384687",
   // Downloadable resume/CV — drop the actual file at public/resume.pdf.
   resumeUrl: "/resume.pdf",
