@@ -6,6 +6,11 @@ import {
   NODE_FILL,
   NODE_FILL_ACTIVE,
   NODE_BORDER,
+  NODE_GLINT,
+  NODE_GLINT_HOT,
+  NODE_SHADOW,
+  NODE_RIM_LIGHT,
+  NODE_RIM_DARK,
   ACCENT,
   ACCENT_SOFT,
   ACCENT_TEXT,
@@ -76,6 +81,29 @@ export default function MolNode({
     .filter(Boolean)
     .join(". ");
 
+  // Layered background: a bright glint anchored near the upper-left (a
+  // tight "hot spot" plus a softer surrounding glow) fading toward a dark
+  // falloff at the lower-right, over the base translucent tint. This is
+  // what actually reads as "curved glass" rather than a flat tinted disc —
+  // a single solid fill can't carry that cue no matter how transparent it
+  // is. All gradient layers sit on the same element as CSS background
+  // layers (no extra DOM nodes), so this doesn't add render cost beyond
+  // the backdrop-filter blur that was already there.
+  const isLit = isHovered || isFocused;
+  const nodeBackground = [
+    `radial-gradient(circle at 30% 24%, ${NODE_GLINT_HOT} 0%, transparent 14%)`,
+    `radial-gradient(ellipse 65% 50% at 30% 26%, ${NODE_GLINT}, transparent 55%)`,
+    `radial-gradient(ellipse 75% 65% at 76% 82%, ${NODE_SHADOW}, transparent 62%)`,
+    isLit ? NODE_FILL_ACTIVE : NODE_FILL,
+  ].join(", ");
+  // A thin lit edge along the top + a soft dark edge along the bottom,
+  // layered inside the outer glow shadow — sells the rim of a curved
+  // surface instead of a flat circle's plain border.
+  const rimShadow = `inset 0 1.5px 2px ${NODE_RIM_LIGHT}, inset 0 -10px 18px ${NODE_RIM_DARK}`;
+  const restShadow = `${rimShadow}, 0 10px 25px -5px rgba(15,23,42,0.08)`;
+  const litShadow = `${rimShadow}, 0 10px 40px -8px ${ACCENT_SOFT}, 0 2px 12px rgba(15,23,42,0.08)`;
+  const litShadowBright = `${rimShadow}, 0 10px 56px -4px ${ACCENT_SOFT}, 0 2px 16px rgba(15,23,42,0.12)`;
+
   return (
     // Static positioning wrapper: this owns `left`/`top` and the -50%/-50%
     // centering transform via plain Tailwind classes, and Framer Motion
@@ -112,13 +140,10 @@ export default function MolNode({
           // exists to avoid.
           boxShadow:
             isFocused && !prefersReducedMotion
-              ? [
-                  `0 10px 40px -8px ${ACCENT_SOFT}, 0 2px 12px rgba(15,23,42,0.08)`,
-                  `0 10px 56px -4px ${ACCENT_SOFT}, 0 2px 16px rgba(15,23,42,0.12)`,
-                ]
-              : isHovered || isFocused
-                ? `0 10px 40px -8px ${ACCENT_SOFT}, 0 2px 12px rgba(15,23,42,0.08)`
-                : "0 10px 25px -5px rgba(15,23,42,0.08)",
+              ? [litShadow, litShadowBright]
+              : isLit
+                ? litShadow
+                : restShadow,
         }}
         transition={{
           y: {
@@ -150,14 +175,14 @@ export default function MolNode({
         aria-label={isHub ? `${accessibleLabel} — open` : accessibleLabel}
         className="mol-node block h-full w-full cursor-pointer rounded-full"
         style={{
-          background: isHovered || isFocused ? NODE_FILL_ACTIVE : NODE_FILL,
-          // Bumped from 12px — more of the ambient bg/bond-lines behind a
-          // node shows through as soft texture rather than sharp shapes,
-          // reading as thicker frosted glass instead of a lightly-smudged
-          // window.
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          border: `1px solid ${isHovered || isFocused ? ACCENT : NODE_BORDER}`,
+          background: nodeBackground,
+          // Bumped from 12px, plus a touch of saturate() — a common glass
+          // trick where whatever's blurred behind (ambient particles/bond
+          // lines) reads as richer through the glass rather than just
+          // hazy/washed out.
+          backdropFilter: "blur(20px) saturate(1.4)",
+          WebkitBackdropFilter: "blur(20px) saturate(1.4)",
+          border: `1px solid ${isLit ? ACCENT : NODE_BORDER}`,
         }}
       >
         <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full">

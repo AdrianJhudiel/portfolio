@@ -12,6 +12,17 @@ export const NODE_FILL = "var(--graph-node-fill)";
 export const NODE_FILL_ACTIVE = "var(--graph-node-fill-active)";
 export const NODE_BORDER = "var(--graph-node-border)";
 
+// Glass-sphere lighting cues layered on top of NODE_FILL (see MolNode.tsx) —
+// a bright glint anchored near one edge plus a soft dark falloff toward the
+// opposite edge is what reads as "curved glass" rather than a flat tinted
+// disc. A fixed, shared light source (not randomized per node) so every
+// node in the graph reads as lit from the same direction.
+export const NODE_GLINT = "var(--graph-node-glint)";
+export const NODE_GLINT_HOT = "var(--graph-node-glint-hot)";
+export const NODE_SHADOW = "var(--graph-node-shadow)";
+export const NODE_RIM_LIGHT = "var(--graph-node-rim-light)";
+export const NODE_RIM_DARK = "var(--graph-node-rim-dark)";
+
 export const BOND_COLOR = "var(--graph-bond-color)";
 
 // Subtle cool accent for hover/active glow — pure white-on-white doesn't

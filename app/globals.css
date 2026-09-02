@@ -36,10 +36,21 @@
      because #778DA9 is lighter than the navy backdrop behind it, *less*
      opacity blends the visible circle *darker*, so this reads as more
      transparent glass while actually widening the text-contrast margin. */
-  --graph-node-fill: rgba(119, 141, 169, 0.35);
-  --graph-node-fill-active: rgba(119, 141, 169, 0.6);
+  --graph-node-fill: rgba(119, 141, 169, 0.18);
+  --graph-node-fill-active: rgba(119, 141, 169, 0.32);
   --graph-node-border: rgba(153, 170, 191, 0.6);
   --graph-bond-color: #475569;
+  /* Glass-sphere lighting cues (MolNode.tsx layers these as gradients on
+     top of --graph-node-fill above, plus inset rim shadows) — a flat tint
+     alone reads as "frosted plastic disc"; a bright glint anchored near one
+     corner + a soft dark falloff toward the opposite corner is what
+     actually sells "curved glass" to the eye. Kept as a fixed light source
+     (not per-node) so every node reads as lit from the same direction. */
+  --graph-node-glint: rgba(255, 255, 255, 0.55);
+  --graph-node-glint-hot: rgba(255, 255, 255, 0.85);
+  --graph-node-shadow: rgba(5, 7, 15, 0.35);
+  --graph-node-rim-light: rgba(255, 255, 255, 0.4);
+  --graph-node-rim-dark: rgba(5, 7, 15, 0.45);
   /* Accent/highlight family is derived from the node color (#778DA9)
      lightened toward white, rather than the previous unrelated indigo, so
      the hover/focus glow reads as "this node's color, brighter" instead of
