@@ -25,18 +25,27 @@
   --graph-bg-to: #0b1020;
   --glass-bg: rgba(30, 41, 59, 0.6);
   --glass-border: rgba(148, 163, 184, 0.25);
-  /* Node fill needs to be visibly *lighter* than --graph-bg-from/to, not
-     just a translucent version of the same tone — a near-match made nodes
-     barely read as distinct shapes (only the accent glow made hovered/
-     focused ones visible). Slate-700/600 give unfocused nodes a real edge
-     against the page. */
-  --graph-node-fill: rgba(51, 65, 85, 0.85);
-  --graph-node-fill-active: rgba(71, 85, 105, 0.95);
-  --graph-node-border: rgba(148, 163, 184, 0.55);
+  /* Node color per brand palette: #778DA9 (rgb(119,141,169)), used as a
+     translucent fill rather than solid — at low opacity over the dark navy
+     backdrop it blends down to a muted slate-blue (keeps unfocused-node
+     label/subtitle text at a safe contrast ratio), and opens up toward the
+     true #778DA9 tone as opacity rises on hover/focus, reading as the node
+     visually "lighting up". Both stops were picked to keep white node text
+     at ≥4.5:1 (WCAG AA) against the resulting blended color. */
+  --graph-node-fill: rgba(119, 141, 169, 0.55);
+  --graph-node-fill-active: rgba(119, 141, 169, 0.72);
+  --graph-node-border: rgba(153, 170, 191, 0.6);
   --graph-bond-color: #475569;
-  --graph-accent: #a5b4fc;
-  --graph-accent-soft: rgba(165, 180, 252, 0.35);
-  --graph-accent-text: #c7d2fe;
+  /* Accent/highlight family is derived from the node color (#778DA9)
+     lightened toward white, rather than the previous unrelated indigo, so
+     the hover/focus glow reads as "this node's color, brighter" instead of
+     a different competing hue. --graph-accent-text is lightened further
+     still since it also carries actual link/label text (breadcrumb,
+     resume button) that needs a stronger contrast margin than a border or
+     glow does. */
+  --graph-accent: #a7b5c7;
+  --graph-accent-soft: rgba(167, 181, 199, 0.35);
+  --graph-accent-text: #c2ccd8;
   --graph-text-dark: #f1f5f9;
   /* Description/detail paragraphs read as flat and washed-out at the same
      muted tone used for secondary metadata (subtitles, feature labels) —
@@ -101,7 +110,7 @@ body {
 }
 
 .mol-node:focus-visible {
-  outline: 2px solid #818cf8;
+  outline: 2px solid #a7b5c7;
   outline-offset: 3px;
 }
 
