@@ -1,10 +1,10 @@
-// Modern minimalist white/glass palette for the molecular network view.
+// Fixed "classy dark navy" palette for the molecular network view.
 //
 // These resolve through CSS custom properties (defined in app/globals.css)
-// rather than raw hex, so the whole graph responds to the visitor's OS
-// light/dark preference automatically — the dark values live entirely in
-// the CSS, nothing here or in the components that consume these constants
-// needs to know which mode is active.
+// rather than raw hex, so every value lives in one place — but unlike the
+// Simple View tokens (--background, --foreground, etc.), the graph's
+// palette is intentionally NOT tied to the visitor's OS light/dark
+// preference. The graph always renders dark, regardless of OS setting.
 export const BG_FROM = "var(--graph-bg-from)";
 export const BG_TO = "var(--graph-bg-to)";
 

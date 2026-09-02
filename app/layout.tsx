@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
+import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import { siteConfig } from "@/lib/site";
 import PersonJsonLd from "@/components/seo/PersonJsonLd";
 import "./globals.css";
@@ -14,8 +14,9 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
+const poppins = Poppins({
+  variable: "--font-poppins",
+  weight: ["500", "600", "700"],
   subsets: ["latin"],
 });
 
@@ -68,7 +69,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} h-full antialiased`}
     >
       <body
         className="h-full text-[var(--foreground)]"
