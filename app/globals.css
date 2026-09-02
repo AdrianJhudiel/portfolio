@@ -8,42 +8,78 @@
   --accent: #4f46e5;
   --accent-cyan: #00d2ff;
   --accent-cyan-text: #0ba5c7;
-  --glass-bg: rgba(255, 255, 255, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.8);
   --card-bg: #ffffff;
   --card-border: #e2e8f0;
   --check: #16a34a;
   color-scheme: light;
 
   /* Molecular graph palette (lib/pearl-theme.ts reads these via var()) —
-     kept as separate tokens from the Simple View ones above because the
-     graph needs a couple of colors (a translucent node fill, a "soft" glow
-     alpha) that don't map cleanly onto the flatter Simple View palette. */
-  --graph-bg-from: #f8fafc;
-  --graph-bg-to: #eef2f7;
-  --graph-node-fill: rgba(255, 255, 255, 0.55);
-  --graph-node-fill-active: rgba(255, 255, 255, 0.85);
-  /* Was rgba(255,255,255,0.9) — invisible against the near-white background
-     outside the accent glow state. Faint slate tint gives unfocused nodes a
-     visible edge. */
-  --graph-node-border: rgba(203, 213, 225, 0.8);
-  --graph-bond-color: #cbd5e1;
-  --graph-accent: #818cf8;
-  --graph-accent-soft: rgba(129, 140, 248, 0.35);
-  --graph-accent-text: #4f46e5;
-  --graph-text-dark: #0f172a;
+     a fixed "classy dark navy" theme, intentionally NOT tied to the
+     visitor's OS light/dark preference (unlike --background/--foreground
+     above, which drive Simple View and do follow it). White node glass on
+     a near-white light-mode background used to read as barely-visible
+     white-on-white; a permanently dark backdrop with lighter nodes fixes
+     that regardless of OS setting. Also covers the header/footer "glass"
+     capsules (--glass-bg/--glass-border), which are graph-exclusive too. */
+  --graph-bg-from: #05070f;
+  --graph-bg-to: #0b1020;
+  --glass-bg: rgba(30, 41, 59, 0.6);
+  --glass-border: rgba(148, 163, 184, 0.25);
+  /* Node color per brand palette: #778DA9 (rgb(119,141,169)), used as a
+     translucent fill rather than solid — at low opacity over the dark navy
+     backdrop it blends down to a muted slate-blue (keeps unfocused-node
+     label/subtitle text at a safe contrast ratio), and opens up toward the
+     true #778DA9 tone as opacity rises on hover/focus, reading as the node
+     visually "lighting up". Both stops were picked to keep white node text
+     at ≥4.5:1 (WCAG AA) against the resulting blended color — pushed lower
+     still (was 0.55/0.72) for a more see-through frosted-glass look;
+     because #778DA9 is lighter than the navy backdrop behind it, *less*
+     opacity blends the visible circle *darker*, so this reads as more
+     transparent glass while actually widening the text-contrast margin. */
+  --graph-node-fill: rgba(119, 141, 169, 0.18);
+  --graph-node-fill-active: rgba(119, 141, 169, 0.32);
+  --graph-node-border: rgba(153, 170, 191, 0.6);
+  --graph-bond-color: #475569;
+  /* Glass-sphere lighting cues (MolNode.tsx layers these as gradients on
+     top of --graph-node-fill above, plus inset rim shadows) — a flat tint
+     alone reads as "frosted plastic disc"; a subtle glint anchored near one
+     corner + a soft dark falloff toward the opposite corner is what sells
+     "curved glass" to the eye. Kept as a fixed light source (not per-node)
+     so every node reads as lit from the same direction. The glint opacity
+     here was originally much higher (0.85/0.55) and, since node label/detail
+     text is centered in the circle while the glint reaches toward center,
+     read as a glare sitting on top of the text rather than a lighting cue —
+     toned down to a soft sheen instead (MolNode.tsx also shrank the
+     gradient's footprint so it hugs the corner rather than spreading in). */
+  --graph-node-glint: rgba(255, 255, 255, 0.14);
+  --graph-node-glint-hot: rgba(255, 255, 255, 0.3);
+  --graph-node-shadow: rgba(5, 7, 15, 0.3);
+  --graph-node-rim-light: rgba(255, 255, 255, 0.28);
+  --graph-node-rim-dark: rgba(5, 7, 15, 0.4);
+  /* Accent/highlight family is derived from the node color (#778DA9)
+     lightened toward white, rather than the previous unrelated indigo, so
+     the hover/focus glow reads as "this node's color, brighter" instead of
+     a different competing hue. --graph-accent-text is lightened further
+     still since it also carries actual link/label text (breadcrumb,
+     resume button) that needs a stronger contrast margin than a border or
+     glow does. */
+  --graph-accent: #a7b5c7;
+  --graph-accent-soft: rgba(167, 181, 199, 0.35);
+  --graph-accent-text: #c2ccd8;
+  --graph-text-dark: #f1f5f9;
   /* Description/detail paragraphs read as flat and washed-out at the same
      muted tone used for secondary metadata (subtitles, feature labels) —
      a richer, higher-contrast body tone for the actual copy fixes that
      without touching the metadata color. */
-  --graph-text-body: #334155;
-  --graph-text-muted: #475569;
-  --graph-check: #16a34a;
+  --graph-text-body: #cbd5e1;
+  --graph-text-muted: #94a3b8;
+  --graph-check: #4ade80;
 }
 
-/* Dark palette, OS-driven only (no manual toggle). Kept close to the light
-   "pearl" identity — deep slate instead of pure black, same indigo accent —
-   rather than a full re-theme. */
+/* Dark palette, OS-driven only (no manual toggle) — Simple View only.
+   Kept close to the light identity — deep slate instead of pure black,
+   same indigo accent — rather than a full re-theme. The graph's own
+   palette (above) is fixed and does not participate in this switch. */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0f172a;
@@ -51,32 +87,10 @@
     --foreground: #e2e8f0;
     --muted: #94a3b8;
     --accent: #a5b4fc;
-    --glass-bg: rgba(30, 41, 59, 0.6);
-    --glass-border: rgba(148, 163, 184, 0.25);
     --card-bg: #1e293b;
     --card-border: rgba(148, 163, 184, 0.18);
     --check: #4ade80;
     color-scheme: dark;
-
-    --graph-bg-from: #0f172a;
-    --graph-bg-to: #131c31;
-    /* These need to be visibly *lighter* than --graph-bg-from/to, not just a
-       translucent version of the same slate — rgba(30,41,59,*) was nearly
-       the same color as the background underneath it, so nodes barely read
-       as distinct shapes (only the accent glow made hovered/focused ones
-       visible). Slate-700/600 give unfocused nodes a real edge against the
-       page. */
-    --graph-node-fill: rgba(51, 65, 85, 0.85);
-    --graph-node-fill-active: rgba(71, 85, 105, 0.95);
-    --graph-node-border: rgba(148, 163, 184, 0.55);
-    --graph-bond-color: #475569;
-    --graph-accent: #a5b4fc;
-    --graph-accent-soft: rgba(165, 180, 252, 0.35);
-    --graph-accent-text: #c7d2fe;
-    --graph-text-dark: #f1f5f9;
-    --graph-text-body: #cbd5e1;
-    --graph-text-muted: #94a3b8;
-    --graph-check: #4ade80;
   }
 }
 
@@ -91,7 +105,7 @@
   --color-check: var(--check);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-display: var(--font-space-grotesk);
+  --font-display: var(--font-poppins);
 }
 
 html {
@@ -116,7 +130,7 @@ body {
 }
 
 .mol-node:focus-visible {
-  outline: 2px solid #818cf8;
+  outline: 2px solid #a7b5c7;
   outline-offset: 3px;
 }
 

@@ -1,16 +1,27 @@
-// Modern minimalist white/glass palette for the molecular network view.
+// Fixed "classy dark navy" palette for the molecular network view.
 //
 // These resolve through CSS custom properties (defined in app/globals.css)
-// rather than raw hex, so the whole graph responds to the visitor's OS
-// light/dark preference automatically — the dark values live entirely in
-// the CSS, nothing here or in the components that consume these constants
-// needs to know which mode is active.
+// rather than raw hex, so every value lives in one place — but unlike the
+// Simple View tokens (--background, --foreground, etc.), the graph's
+// palette is intentionally NOT tied to the visitor's OS light/dark
+// preference. The graph always renders dark, regardless of OS setting.
 export const BG_FROM = "var(--graph-bg-from)";
 export const BG_TO = "var(--graph-bg-to)";
 
 export const NODE_FILL = "var(--graph-node-fill)";
 export const NODE_FILL_ACTIVE = "var(--graph-node-fill-active)";
 export const NODE_BORDER = "var(--graph-node-border)";
+
+// Glass-sphere lighting cues layered on top of NODE_FILL (see MolNode.tsx) —
+// a bright glint anchored near one edge plus a soft dark falloff toward the
+// opposite edge is what reads as "curved glass" rather than a flat tinted
+// disc. A fixed, shared light source (not randomized per node) so every
+// node in the graph reads as lit from the same direction.
+export const NODE_GLINT = "var(--graph-node-glint)";
+export const NODE_GLINT_HOT = "var(--graph-node-glint-hot)";
+export const NODE_SHADOW = "var(--graph-node-shadow)";
+export const NODE_RIM_LIGHT = "var(--graph-node-rim-light)";
+export const NODE_RIM_DARK = "var(--graph-node-rim-dark)";
 
 export const BOND_COLOR = "var(--graph-bond-color)";
 

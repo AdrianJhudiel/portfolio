@@ -250,7 +250,18 @@ export default function MolecularCanvas({ viewToggle }: { viewToggle: ReactNode 
               index={i}
               isFocused={focusedId === node.id}
               isDimmed={focusedId !== null && !activeIds.has(node.id)}
-              isBobbing={focusedId === null && hoveredId === null}
+              // Previously froze *every* node's bob the moment anything was
+              // focused, not just the interactive foreground — so the whole
+              // scene went inert for as long as a visitor stayed zoomed in,
+              // which is most of the time spent in the graph. Background/
+              // dimmed nodes (excluded from activeIds) aren't part of the
+              // current click-precision target, so there's nothing lost by
+              // letting them keep drifting once a cluster is open. Keeping
+              // the original `hoveredId === null` (global, not per-node)
+              // check is what actually prevents the hover-flicker bug this
+              // was built to avoid — a nearby bobbing node's hit-box could
+              // still drift under a *different* node's cursor otherwise.
+              isBobbing={hoveredId === null && !activeIds.has(node.id)}
               isHovered={hoveredId === node.id}
               onHover={setHoveredId}
               onClick={() => focusNode(node)}

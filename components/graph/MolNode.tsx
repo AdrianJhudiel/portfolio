@@ -6,6 +6,11 @@ import {
   NODE_FILL,
   NODE_FILL_ACTIVE,
   NODE_BORDER,
+  NODE_GLINT,
+  NODE_GLINT_HOT,
+  NODE_SHADOW,
+  NODE_RIM_LIGHT,
+  NODE_RIM_DARK,
   ACCENT,
   ACCENT_SOFT,
   ACCENT_TEXT,
@@ -76,6 +81,33 @@ export default function MolNode({
     .filter(Boolean)
     .join(". ");
 
+  // Layered background: a subtle glint tucked into the upper-left corner
+  // (a small "hot spot" plus a softer surrounding sheen) fading toward a
+  // dark falloff at the lower-right, over the base translucent tint. This
+  // is what reads as "curved glass" rather than a flat tinted disc — a
+  // single solid fill can't carry that cue no matter how transparent it is.
+  // Node label/detail text is centered in the circle, so the glint is kept
+  // small and hugging the corner (rather than spreading toward center) and
+  // low-opacity (see NODE_GLINT/_HOT in pearl-theme.ts) — a larger, brighter
+  // version of this previously sat on top of the text as a glare instead of
+  // reading as lighting. All gradient layers sit on the same element as CSS
+  // background layers (no extra DOM nodes), so this doesn't add render cost
+  // beyond the backdrop-filter blur that was already there.
+  const isLit = isHovered || isFocused;
+  const nodeBackground = [
+    `radial-gradient(circle at 22% 18%, ${NODE_GLINT_HOT} 0%, transparent 9%)`,
+    `radial-gradient(ellipse 42% 32% at 22% 18%, ${NODE_GLINT}, transparent 62%)`,
+    `radial-gradient(ellipse 75% 65% at 76% 82%, ${NODE_SHADOW}, transparent 62%)`,
+    isLit ? NODE_FILL_ACTIVE : NODE_FILL,
+  ].join(", ");
+  // A thin lit edge along the top + a soft dark edge along the bottom,
+  // layered inside the outer glow shadow — sells the rim of a curved
+  // surface instead of a flat circle's plain border.
+  const rimShadow = `inset 0 1.5px 2px ${NODE_RIM_LIGHT}, inset 0 -10px 18px ${NODE_RIM_DARK}`;
+  const restShadow = `${rimShadow}, 0 10px 25px -5px rgba(15,23,42,0.08)`;
+  const litShadow = `${rimShadow}, 0 10px 40px -8px ${ACCENT_SOFT}, 0 2px 12px rgba(15,23,42,0.08)`;
+  const litShadowBright = `${rimShadow}, 0 10px 56px -4px ${ACCENT_SOFT}, 0 2px 16px rgba(15,23,42,0.12)`;
+
   return (
     // Static positioning wrapper: this owns `left`/`top` and the -50%/-50%
     // centering transform via plain Tailwind classes, and Framer Motion
@@ -102,6 +134,20 @@ export default function MolNode({
           opacity: isDimmed ? 0.25 : 1,
           scale: isHovered && !isFocused ? 1.08 : 1,
           filter: isDimmed ? "blur(4px)" : "blur(0px)",
+          // A static glow reads as inert once you've been looking at it for
+          // more than a second — the focused node is the one thing on
+          // screen guaranteed to hold attention, so it gets a slow glow
+          // "breathe" (opacity-only, via a matching pair of box-shadow
+          // strings) instead of the plain snap-to-value the other states
+          // use. Position/scale never move here, so this can't drift the
+          // hit-box or retrigger the hover-flicker the bobbing freeze below
+          // exists to avoid.
+          boxShadow:
+            isFocused && !prefersReducedMotion
+              ? [litShadow, litShadowBright]
+              : isLit
+                ? litShadow
+                : restShadow,
         }}
         transition={{
           y: {
@@ -123,18 +169,24 @@ export default function MolNode({
           // plain non-oscillating tween can't cross back over the cursor
           // once it starts leaving, so the loop has nothing to latch onto.
           scale: { type: "tween", duration: 0.18, ease: "easeOut" },
+          boxShadow: {
+            duration: 2.4,
+            repeat: isFocused && !prefersReducedMotion ? Infinity : 0,
+            repeatType: "reverse",
+            ease: "easeInOut",
+          },
         }}
         aria-label={isHub ? `${accessibleLabel} — open` : accessibleLabel}
         className="mol-node block h-full w-full cursor-pointer rounded-full"
         style={{
-          background: isHovered || isFocused ? NODE_FILL_ACTIVE : NODE_FILL,
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
-          border: `1px solid ${isHovered || isFocused ? ACCENT : NODE_BORDER}`,
-          boxShadow:
-            isHovered || isFocused
-              ? `0 10px 40px -8px ${ACCENT_SOFT}, 0 2px 12px rgba(15,23,42,0.08)`
-              : "0 10px 25px -5px rgba(15,23,42,0.08)",
+          background: nodeBackground,
+          // Bumped from 12px, plus a touch of saturate() — a common glass
+          // trick where whatever's blurred behind (ambient particles/bond
+          // lines) reads as richer through the glass rather than just
+          // hazy/washed out.
+          backdropFilter: "blur(20px) saturate(1.4)",
+          WebkitBackdropFilter: "blur(20px) saturate(1.4)",
+          border: `1px solid ${isLit ? ACCENT : NODE_BORDER}`,
         }}
       >
         <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full">
