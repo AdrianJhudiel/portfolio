@@ -31,9 +31,13 @@
      label/subtitle text at a safe contrast ratio), and opens up toward the
      true #778DA9 tone as opacity rises on hover/focus, reading as the node
      visually "lighting up". Both stops were picked to keep white node text
-     at ≥4.5:1 (WCAG AA) against the resulting blended color. */
-  --graph-node-fill: rgba(119, 141, 169, 0.55);
-  --graph-node-fill-active: rgba(119, 141, 169, 0.72);
+     at ≥4.5:1 (WCAG AA) against the resulting blended color — pushed lower
+     still (was 0.55/0.72) for a more see-through frosted-glass look;
+     because #778DA9 is lighter than the navy backdrop behind it, *less*
+     opacity blends the visible circle *darker*, so this reads as more
+     transparent glass while actually widening the text-contrast margin. */
+  --graph-node-fill: rgba(119, 141, 169, 0.35);
+  --graph-node-fill-active: rgba(119, 141, 169, 0.6);
   --graph-node-border: rgba(153, 170, 191, 0.6);
   --graph-bond-color: #475569;
   /* Accent/highlight family is derived from the node color (#778DA9)

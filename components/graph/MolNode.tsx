@@ -102,6 +102,23 @@ export default function MolNode({
           opacity: isDimmed ? 0.25 : 1,
           scale: isHovered && !isFocused ? 1.08 : 1,
           filter: isDimmed ? "blur(4px)" : "blur(0px)",
+          // A static glow reads as inert once you've been looking at it for
+          // more than a second — the focused node is the one thing on
+          // screen guaranteed to hold attention, so it gets a slow glow
+          // "breathe" (opacity-only, via a matching pair of box-shadow
+          // strings) instead of the plain snap-to-value the other states
+          // use. Position/scale never move here, so this can't drift the
+          // hit-box or retrigger the hover-flicker the bobbing freeze below
+          // exists to avoid.
+          boxShadow:
+            isFocused && !prefersReducedMotion
+              ? [
+                  `0 10px 40px -8px ${ACCENT_SOFT}, 0 2px 12px rgba(15,23,42,0.08)`,
+                  `0 10px 56px -4px ${ACCENT_SOFT}, 0 2px 16px rgba(15,23,42,0.12)`,
+                ]
+              : isHovered || isFocused
+                ? `0 10px 40px -8px ${ACCENT_SOFT}, 0 2px 12px rgba(15,23,42,0.08)`
+                : "0 10px 25px -5px rgba(15,23,42,0.08)",
         }}
         transition={{
           y: {
@@ -123,18 +140,24 @@ export default function MolNode({
           // plain non-oscillating tween can't cross back over the cursor
           // once it starts leaving, so the loop has nothing to latch onto.
           scale: { type: "tween", duration: 0.18, ease: "easeOut" },
+          boxShadow: {
+            duration: 2.4,
+            repeat: isFocused && !prefersReducedMotion ? Infinity : 0,
+            repeatType: "reverse",
+            ease: "easeInOut",
+          },
         }}
         aria-label={isHub ? `${accessibleLabel} — open` : accessibleLabel}
         className="mol-node block h-full w-full cursor-pointer rounded-full"
         style={{
           background: isHovered || isFocused ? NODE_FILL_ACTIVE : NODE_FILL,
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
+          // Bumped from 12px — more of the ambient bg/bond-lines behind a
+          // node shows through as soft texture rather than sharp shapes,
+          // reading as thicker frosted glass instead of a lightly-smudged
+          // window.
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
           border: `1px solid ${isHovered || isFocused ? ACCENT : NODE_BORDER}`,
-          boxShadow:
-            isHovered || isFocused
-              ? `0 10px 40px -8px ${ACCENT_SOFT}, 0 2px 12px rgba(15,23,42,0.08)`
-              : "0 10px 25px -5px rgba(15,23,42,0.08)",
         }}
       >
         <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full">
