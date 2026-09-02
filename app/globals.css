@@ -42,15 +42,20 @@
   --graph-bond-color: #475569;
   /* Glass-sphere lighting cues (MolNode.tsx layers these as gradients on
      top of --graph-node-fill above, plus inset rim shadows) — a flat tint
-     alone reads as "frosted plastic disc"; a bright glint anchored near one
-     corner + a soft dark falloff toward the opposite corner is what
-     actually sells "curved glass" to the eye. Kept as a fixed light source
-     (not per-node) so every node reads as lit from the same direction. */
-  --graph-node-glint: rgba(255, 255, 255, 0.55);
-  --graph-node-glint-hot: rgba(255, 255, 255, 0.85);
-  --graph-node-shadow: rgba(5, 7, 15, 0.35);
-  --graph-node-rim-light: rgba(255, 255, 255, 0.4);
-  --graph-node-rim-dark: rgba(5, 7, 15, 0.45);
+     alone reads as "frosted plastic disc"; a subtle glint anchored near one
+     corner + a soft dark falloff toward the opposite corner is what sells
+     "curved glass" to the eye. Kept as a fixed light source (not per-node)
+     so every node reads as lit from the same direction. The glint opacity
+     here was originally much higher (0.85/0.55) and, since node label/detail
+     text is centered in the circle while the glint reaches toward center,
+     read as a glare sitting on top of the text rather than a lighting cue —
+     toned down to a soft sheen instead (MolNode.tsx also shrank the
+     gradient's footprint so it hugs the corner rather than spreading in). */
+  --graph-node-glint: rgba(255, 255, 255, 0.14);
+  --graph-node-glint-hot: rgba(255, 255, 255, 0.3);
+  --graph-node-shadow: rgba(5, 7, 15, 0.3);
+  --graph-node-rim-light: rgba(255, 255, 255, 0.28);
+  --graph-node-rim-dark: rgba(5, 7, 15, 0.4);
   /* Accent/highlight family is derived from the node color (#778DA9)
      lightened toward white, rather than the previous unrelated indigo, so
      the hover/focus glow reads as "this node's color, brighter" instead of

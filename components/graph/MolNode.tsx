@@ -81,18 +81,22 @@ export default function MolNode({
     .filter(Boolean)
     .join(". ");
 
-  // Layered background: a bright glint anchored near the upper-left (a
-  // tight "hot spot" plus a softer surrounding glow) fading toward a dark
-  // falloff at the lower-right, over the base translucent tint. This is
-  // what actually reads as "curved glass" rather than a flat tinted disc —
-  // a single solid fill can't carry that cue no matter how transparent it
-  // is. All gradient layers sit on the same element as CSS background
-  // layers (no extra DOM nodes), so this doesn't add render cost beyond
-  // the backdrop-filter blur that was already there.
+  // Layered background: a subtle glint tucked into the upper-left corner
+  // (a small "hot spot" plus a softer surrounding sheen) fading toward a
+  // dark falloff at the lower-right, over the base translucent tint. This
+  // is what reads as "curved glass" rather than a flat tinted disc — a
+  // single solid fill can't carry that cue no matter how transparent it is.
+  // Node label/detail text is centered in the circle, so the glint is kept
+  // small and hugging the corner (rather than spreading toward center) and
+  // low-opacity (see NODE_GLINT/_HOT in pearl-theme.ts) — a larger, brighter
+  // version of this previously sat on top of the text as a glare instead of
+  // reading as lighting. All gradient layers sit on the same element as CSS
+  // background layers (no extra DOM nodes), so this doesn't add render cost
+  // beyond the backdrop-filter blur that was already there.
   const isLit = isHovered || isFocused;
   const nodeBackground = [
-    `radial-gradient(circle at 30% 24%, ${NODE_GLINT_HOT} 0%, transparent 14%)`,
-    `radial-gradient(ellipse 65% 50% at 30% 26%, ${NODE_GLINT}, transparent 55%)`,
+    `radial-gradient(circle at 22% 18%, ${NODE_GLINT_HOT} 0%, transparent 9%)`,
+    `radial-gradient(ellipse 42% 32% at 22% 18%, ${NODE_GLINT}, transparent 62%)`,
     `radial-gradient(ellipse 75% 65% at 76% 82%, ${NODE_SHADOW}, transparent 62%)`,
     isLit ? NODE_FILL_ACTIVE : NODE_FILL,
   ].join(", ");
